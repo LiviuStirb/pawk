@@ -22,7 +22,6 @@ def parse_params():
 
 
 def code():
-    print(args)
     if '-f' in args:
         with open(args['-f'], "r") as f:
             return f.readlines()
@@ -31,25 +30,35 @@ def code():
 
 
 def process_file():
-    global NR
     FNR = 0
     with open(FILENAME, "r") as file:
         for line in file:
-            line = line.strip()
-            if len(line) == 0:
-                continue
-            if FS == '':
-                fields: List[str] = line.split()
-            else:
-                fields = line.split(FS)
-            NF = len(fields)
-            FNR += 1
-            NR += 1
-            exec(code)
+            process_line(FNR, line)
+
+
+def process_stdin():
+    global  NR
+    FNR = 0
+    for line in sys.stdin:
+        process_line(FNR, line)
+
+def process_line(FNR, line):
+    line = line.strip()
+    if len(line) == 0:
+        return
+    global NR
+    if FS == '':
+        fields: List[str] = line.split()
+    else:
+        fields = line.split(FS)
+    NF = len(fields)
+    FNR += 1
+    NR += 1
+    exec(code)
+
 
 args = {}
 inputs = []
-
 parse_params()
 code = code()
 NR = 0
@@ -57,6 +66,9 @@ FS = ''
 if '-F' in args: FS = args['-F']
 
 # TODO run begin
-for FILENAME in inputs:
-    process_file()
+if not inputs:
+    process_stdin()
+else:
+    for FILENAME in inputs:
+       process_file()
 # TODO run end
