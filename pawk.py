@@ -65,10 +65,15 @@ NR = 0
 FS = ''
 if '-F' in args: FS = args['-F']
 
-# TODO run begin
+begin_code = ''
+if '-BEGIN' in args: begin_code = args['-BEGIN']
+end_code = ''
+if '-END' in args: end_code = args['-END']
+
+exec(begin_code)
 if not inputs:
     process_stdin()
 else:
     for FILENAME in inputs:
        process_file()
-# TODO run end
+exec(end_code)
